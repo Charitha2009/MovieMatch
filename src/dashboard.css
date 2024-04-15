@@ -1,0 +1,21 @@
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px 20px;
+    color: white;
+  }
+  
+  .navbar-item {
+    margin-right: 20px;
+  }
+  
+  .signout-button {
+    background-color: #ff3860;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+  }
+  
