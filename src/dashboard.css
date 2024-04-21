@@ -35,9 +35,13 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    height: 40vh;
-    width: 140px;
+    height: 400px;
+    width: 200px;
     color: white;
+  }
+  .movie-card img {
+    height: 350px;
+    width: 200px;
   }
   
   .scroll-container {
@@ -79,3 +83,7 @@
   .genre-heading{
     margin-left: 5vw;
   }
+
+.movie-image {
+    height: 30vh;
+}
