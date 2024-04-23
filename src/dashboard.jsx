@@ -3,7 +3,7 @@ import React, { useState, useEffect} from 'react';
 import { auth } from './firebase';
 import './dashboard.css'; // Import custom CSS file
 import Edit from './edit';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { firestore } from './firebase';
 import MovieCard from './MovieCard'; // Import the MovieCard component
 class Dashboard extends React.Component {
@@ -14,13 +14,15 @@ class Dashboard extends React.Component {
     this.thirdScrollRef = React.createRef();
     this.fourthScrollRef = React.createRef();
     this.fifthScrollRef = React.createRef();
+    this.sixthScrollRef = React.createRef();
 
     this.state = {
       comedyMovies: [],
       romanticMovies: [],
       horrorMovies: [],
       actionMovies: [],
-      thrillerMovies: []
+      thrillerMovies: [],
+      watchedMovies: []
     };
   }
 
@@ -30,7 +32,48 @@ class Dashboard extends React.Component {
     this.fetchHorrorMovies();
     this.fetchActionMovies();
     this.fetchThrillerMovies();
+    this.fetchWatchedMovies();
   }
+
+  fetchWatchedMovies = async () => {
+    const userEmail = auth.currentUser.email; // Assuming currentUser is not null
+    const userDocRef = doc(firestore, "users", userEmail);
+
+    try {
+        // Fetch the user's document to get the list of watched movie IDs
+        const userDocSnapshot = await getDoc(userDocRef);
+        if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            const movieIds = userData.moviesWatched; // Assuming this is the field where movie IDs are stored
+
+            if (movieIds && movieIds.length > 0) {
+                // Fetch each movie's details from the Movies collection
+                const watchedMovies = await Promise.all(movieIds.map(async (movieId) => {
+                    const movieRef = doc(firestore, "Movies", movieId);
+                    const movieSnapshot = await getDoc(movieRef);
+                    if (movieSnapshot.exists()) {
+                        return { id: movieSnapshot.id, ...movieSnapshot.data() };
+                    } else {
+                        console.log(`No details found for movie with ID: ${movieId}`);
+                        return null; // Handle movies that might have been removed or IDs that are invalid
+                    }
+                }));
+
+                // Update the state with the fetched movies, filtering out any null entries
+                this.setState({ watchedMovies: watchedMovies.filter(movie => movie !== null) });
+            } else {
+                console.log('No watched movies to display.');
+                this.setState({ watchedMovies: [] });
+            }
+        } else {
+            console.error("User document does not exist");
+            this.setState({ watchedMovies: [] });
+        }
+    } catch (error) {
+        console.error('Error fetching watched movies:', error);
+    }
+};
+
 
   fetchComedyMovies = () => {
     const q = query(collection(firestore, 'Movies'), where('genre_list', 'array-contains', 'Comedy'));
@@ -159,7 +202,7 @@ class Dashboard extends React.Component {
 
   render() {
     const { user } = this.props;
-    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies } = this.state;
+    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies, watchedMovies } = this.state;
 
     return (
       <div>
@@ -171,6 +214,23 @@ class Dashboard extends React.Component {
         <div className="content">
           <h2 className='genre-heading'>Welcome, {user ? user.displayName || 'User' : 'User'}!</h2>
 
+          {/* Watched Movies */}
+          <div className="scroll-container">
+          <h2 className='genre-heading'>Movies Already Watched</h2>
+          <button className="scroll-button left" onClick={() => this.scrollLeft(this.sixthScrollRef)}><h1>{"<"}</h1></button>
+          <div className="card-grid" ref={this.sixthScrollRef}>
+          {/* Display comedy movies */}
+          {watchedMovies.map((movie) => {
+            const posterPath = this.getPosterPath(movie.id); // Get poster path
+            console.log("Poster Path:", posterPath); // Log the poster path
+            return (
+              <MovieCard key={movie.id} movie={movie} user={user}/>
+            );
+          })}
+        </div>
+        <button className="scroll-button right" onClick={() => this.scrollRight(this.firstScrollRef)}><h1>{">"}</h1></button>
+      </div>
+
           {/* Comedy Movies */}
           <div className="scroll-container">
           <h2 className='genre-heading'>Comedy Movies</h2>
@@ -181,7 +241,7 @@ class Dashboard extends React.Component {
             const posterPath = this.getPosterPath(movie.id); // Get poster path
             console.log("Poster Path:", posterPath); // Log the poster path
             return (
-              <MovieCard key={movie.id} movie={movie} />
+              <MovieCard key={movie.id} movie={movie} user={user}/>
             );
           })}
         </div>
