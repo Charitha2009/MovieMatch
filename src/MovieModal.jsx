@@ -94,39 +94,40 @@ const MovieModal = ({ movie, onClose }) => {
         {/* Use metadata and filters directly in your JSX */}
         <h2>{movie?.title || 'No title available'}</h2>
         <p>{metadata?.tagline}</p>
-        <img 
-  className="movie-modal-poster"
-  src={collectionDetails?.poster_path ? `https://image.tmdb.org/t/p/w500${metadata.poster_path}` : 'default_poster.png'} 
-  alt={metadata?.title} 
-/>
+        {/* <img 
+          className="movie-modal-poster"
+          src={collectionDetails?.poster_path ? 'https://image.tmdb.org/t/p/w500' + metadata.poster_path : 'https://nbcpalmsprings.com/wp-content/uploads/sites/8/2021/12/BEST-MOVIES-OF-2021.jpeg'} 
+          alt={metadata?.title} 
+        />
+        <img src={collectionDetails?.poster_path ? 'https://image.tmdb.org/t/p/w500' + metadata.poster_path : 'https://nbcpalmsprings.com/wp-content/uploads/sites/8/2021/12/BEST-MOVIES-OF-2021.jpeg'} alt={movie.title} className='movie-image'/>
+       */}
 
+        <p className="movie-modal-overview">{metadata?.overview || 'No overview available'}</p>
+                <div className="movie-modal-detail-list">
+          {movie?.genre && movie.genre.length > 0 && (
+            <div>
+              <strong>Genres: </strong>
+              <div className="detail-list">
+                {movie.genre.map((genreItem, index) => (
+                  <span key={index} className="detail-item">{genreItem}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
-<p className="movie-modal-overview">{metadata?.overview || 'No overview available'}</p>
-        <div className="movie-modal-detail-list">
-  {movie?.genre && movie.genre.length > 0 && (
-    <div>
-      <strong>Genres: </strong>
-      <div className="detail-list">
-        {movie.genre.map((genreItem, index) => (
-          <span key={index} className="detail-item">{genreItem}</span>
-        ))}
-      </div>
-    </div>
-  )}
-</div>
-
-<div className="movie-modal-detail-list">
-  {movie?.production_companies && movie.production_companies.length > 0 && (
-    <div>
-      <strong>Production Companies: </strong>
-      <div className="detail-list">
-        {movie.production_companies.map((company, index) => (
-          <span key={index} className="detail-item">{company.name}</span>
-        ))}
-      </div>
-    </div>
-  )}
-</div>
+        {/* <div className="movie-modal-detail-list">
+          {movie?.production_companies && movie.production_companies.length > 0 && (
+            <div>
+              <strong>Production Companies: </strong>
+              <div className="detail-list">
+                {movie.production_companies.map((company, index) => (
+                  <span key={index} className="detail-item">{company.name}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div> */}
 
         <p>{movie?.release_date}</p>
         <p>"Ratings:"{movie?.vote_average}</p>

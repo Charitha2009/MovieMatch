@@ -5,11 +5,13 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  display:center;
-  justify-content: center;
-  align-items: center;
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
   z-index: 1000;
 }
+
+
 
 .movie-modal-content {
   background: rgb(73, 69, 64);
