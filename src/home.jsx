@@ -50,6 +50,7 @@ class Home extends React.Component {
         return; // Exit the function if user already exists
       }
   
+  
       // Save user details to Firestore collection with email as document ID
       await setDoc(doc(firestore, "users", email), { displayName, email, uid, admin: false });
     } catch (error) {

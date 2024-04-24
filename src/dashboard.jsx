@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { Component } from 'react';
+
 import { auth, firestore } from './firebase';
 import './dashboard.css'; // Import custom CSS file
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import MovieCard from './MovieCard'; // Import the MovieCard component
+import AddMovieForm from './AddMovieForm';
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -14,7 +16,8 @@ class Dashboard extends React.Component {
       actionMovies: [],
       thrillerMovies: [],
       watchedMovies: [],
-      suggestedMovies: []
+      suggestedMovies: [],
+      showForm: false
     };
 
     this.firstScrollRef = React.createRef();
@@ -188,7 +191,9 @@ class Dashboard extends React.Component {
       });
   };
   
-  
+  handleAddMovie = () => {
+    this.setState(prevState => ({ showForm: !prevState.showForm }));
+  };
 
   handleSignOut = () => {
     auth.signOut().then(() => {
@@ -216,16 +221,33 @@ class Dashboard extends React.Component {
     }
   };
 
+
+ 
+
+  // Method to handle when the Search button is clicked
+  handleSearch = () => {
+    // You can replace this with your logic to handle the search action
+    // This might involve setting a state variable to true which conditionally renders a search bar, or redirects to a search page
+    console.log('Search button clicked');
+  };
+
+
+
   render() {
     const { user } = this.props;
-    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies, watchedMovies, suggestedMovies } = this.state;
+    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies, watchedMovies, suggestedMovies, showForm } = this.state;
 
     return (
       <div>
         <div className="navbar-container">
           <div className="navbar-item">MovieMatch <i className="fa-solid fa-magnifying-glass"></i></div>
+          <button className="navbar-button" onClick={this.handleAddMovie}>Add Movie</button>
+          <button className="navbar-button" onClick={this.handleSearch}><i className="fa-solid fa-magnifying-glass"></i> Search</button>
           <button className="signout-button" onClick={this.handleSignOut}>Sign Out</button>
+        
         </div>
+        {showForm && <AddMovieForm closeForm={() => this.setState({ showForm: false })} />}
+
 
         <div className="content">
           <h2 className='genre-heading'>Welcome, {user ? user.displayName || 'User' : 'User'}!</h2>

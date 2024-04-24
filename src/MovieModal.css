@@ -1,0 +1,92 @@
+.movie-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display:center;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.movie-modal-content {
+  background: rgb(73, 69, 64);
+  padding: 10px; /* Reduced padding */
+  border-radius: 5px;
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  height: 80vh; /* Set a fixed height based on the viewport height */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Add scroll to the modal */
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+
+.movie-modal-overview {
+  margin: 10px 0;
+  white-space: pre-wrap; /* Preserves spaces and lines */
+}
+
+/* Add any other styling you need for the overview text */
+.movie-modal-overview p {
+  margin: 0; /* Remove default paragraph margin */
+}
+
+
+.movie-modal-detail-list {
+  margin-top: 10px; /* Adjust the margin as needed */
+}
+
+.detail-list {
+  display: flex; /* This will layout the children in a row */
+  flex-wrap: wrap; /* This will allow items to wrap to the next line if needed */
+  gap: 10px; /* This adds space between the items */
+}
+
+.detail-list-horizontal {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 5px 0; /* Reduced padding */
+}
+
+.detail-item {
+  background: #f0f0f0;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+
+.movie-modal-poster {
+  width: 100%; /* Full width of its container */
+  max-width: 200px; /* Maximum width */
+  height: auto; /* Maintain aspect ratio */
+  margin: 0 auto; /* Center the image */
+}.movie-modal-description {
+  flex-grow: 1; /* Takes up all available space */
+  overflow-y: auto; /* Add scroll to the description */
+}
+
+.edit-button {
+  margin-top: 10px; /* Space above the button */
+  padding: 8px 16px; /* Padding inside the button */
+  border: none; /* No border by default */
+  background-color: #4CAF50; /* Example background color */
+  color: white; /* Text color */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Cursor to indicate it's clickable */
+}

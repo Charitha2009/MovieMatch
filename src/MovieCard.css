@@ -1,3 +1,72 @@
 movie-image {
     height: 10vh;
 }
+
+
+.edit-form-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+  }
+  
+  .edit-form-backdrop {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .edit-form {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+  }
+  
+  .edit-form h2 {
+    margin-top: 0;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 10px;
+    color:black;
+  }
+  
+  .edit-form input[type="text"],
+  .edit-form input[type="date"],
+  .edit-form input[type="number"],
+  .edit-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
+  
+  .edit-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  .edit-form button[type="submit"] {
+    background-color: #5cb85c;
+    color: rgb(202, 14, 14);
+  }
+  
+  .edit-form button[type="button"] {
+    background-color: #f0f0f0;
+  }
