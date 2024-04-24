@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { firestore } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
-
+import './AddMovieForm.css';
 const AddMovieForm = () => {
     const [genres, setGenres] = useState('');
     const [originalLanguage, setOriginalLanguage] = useState('');
@@ -45,45 +45,48 @@ const AddMovieForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Title:
-                <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
-            </label>
-            <label>
-                Genres (comma-separated):
-                <input type="text" value={genres} onChange={e => setGenres(e.target.value)} required />
-            </label>
-            <label>
-                Original Language:
-                <input type="text" value={originalLanguage} onChange={e => setOriginalLanguage(e.target.value)} required />
-            </label>
-            <label>
-                Production Companies (comma-separated):
-                <input type="text" value={productionCompanies} onChange={e => setProductionCompanies(e.target.value)} required />
-            </label>
-            <label>
-                Production Countries (comma-separated):
-                <input type="text" value={productionCountries} onChange={e => setProductionCountries(e.target.value)} required />
-            </label>
-            <label>
-                Release Date:
-                <input type="date" value={releaseDate} onChange={e => setReleaseDate(e.target.value)} required />
-            </label>
-            <label>
-                Runtime (minutes):
-                <input type="number" value={runtime} onChange={e => setRuntime(e.target.value)} required />
-            </label>
-            <label>
-                Vote Average:
-                <input type="number" step="0.1" value={voteAverage} onChange={e => setVoteAverage(e.target.value)} required />
-            </label>
-            <label>
-                Popularity:
-                <input type="number" step="0.1" value={popularity} onChange={e => setPopularity(e.target.value)} required />
-            </label>
-            <button type="submit">Add Movie</button>
-        </form>
+<div className='form-container'>
+  <form onSubmit={handleSubmit} className="movie-form">
+    <div className="form-group">
+      <label htmlFor="title">Title:</label>
+      <input type="text" id="title" value={title} onChange={e => setTitle(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="genres">Genres (comma-separated):</label>
+      <input type="text" id="genres" value={genres} onChange={e => setGenres(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="originalLanguage">Original Language:</label>
+      <input type="text" id="originalLanguage" value={originalLanguage} onChange={e => setOriginalLanguage(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="productionCompanies">Production Companies (comma-separated):</label>
+      <input type="text" id="productionCompanies" value={productionCompanies} onChange={e => setProductionCompanies(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="productionCountries">Production Countries (comma-separated):</label>
+      <input type="text" id="productionCountries" value={productionCountries} onChange={e => setProductionCountries(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="releaseDate">Release Date:</label>
+      <input type="date" id="releaseDate" value={releaseDate} onChange={e => setReleaseDate(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="runtime">Runtime (minutes):</label>
+      <input type="number" id="runtime" value={runtime} onChange={e => setRuntime(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="voteAverage">Vote Average:</label>
+      <input type="number" step="0.1" id="voteAverage" value={voteAverage} onChange={e => setVoteAverage(e.target.value)} required />
+    </div>
+    <div className="form-group">
+      <label htmlFor="popularity">Popularity:</label>
+      <input type="number" step="0.1" id="popularity" value={popularity} onChange={e => setPopularity(e.target.value)} required />
+    </div>
+    <button type="submit">Add Movie</button>
+  </form>
+</div>
+
     );
 };
 

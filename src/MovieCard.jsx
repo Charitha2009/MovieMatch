@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getDoc, updateDoc, doc, query, collection, where, getDocs, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getDoc, deleteDoc, updateDoc, doc, query, collection, where, getDocs, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { firestore, auth } from './firebase';
 import './dashboard.css'; // Import custom CSS file
 import MovieModal from './MovieModal'; // Import the modal component
@@ -149,6 +149,40 @@ class MovieCard extends Component {
       console.error("Error updating document:", error);
     }
   };
+
+  deleteMovie = async (movieId) => {
+    try {
+      // Delete the movie document from the Movies collection
+      const movieDocRef = doc(firestore, "Movies", movieId);
+      await deleteDoc(movieDocRef);
+
+      // Delete related documents from Collections, Filters, Metadata collections
+      const collectionsQuery = query(collection(firestore, 'Collections'), where('movieId', '==', movieId));
+      const collectionsSnapshot = await getDocs(collectionsQuery);
+      collectionsSnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+      const filtersQuery = query(collection(firestore, 'Filters'), where('movieId', '==', movieId));
+      const filtersSnapshot = await getDocs(filtersQuery);
+      filtersSnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+      const metadataQuery = query(collection(firestore, 'Metadata'), where('movieId', '==', movieId));
+      const metadataSnapshot = await getDocs(metadataQuery);
+      metadataSnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+      // Display success message or update UI accordingly
+      console.log("Movie deleted successfully!");
+      window.location.reload();
+
+    } catch (error) {
+      console.error("Error deleting movie:", error);
+    }
+  };
   
   
 
@@ -168,16 +202,13 @@ class MovieCard extends Component {
           {watched ? 'Unwatch' : 'Mark as Watched'}
         </button> 
         {isModalOpen && <MovieModal movie={movie} onClose={this.closeModal}  />}
-        {/* {isAdmin && (
-        <button className="edit-button" onClick={handleEditClick()}>
-          Edit
-        </button>
-        )} */}
+        
  {isAdmin && (
           <button className="edit-button" onClick={this.handleEditClick}>
             Edit
           </button>
         )}
+        <button className='edit-button' onClick={() => this.deleteMovie(movie.id)} > Delete</button>
        {isEditing && (
   <div className="edit-form-container">
     <div className="edit-form-backdrop" onClick={() => this.setState({ isEditing: false })}>
