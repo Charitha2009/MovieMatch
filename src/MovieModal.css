@@ -4,24 +4,26 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display:center;
+  background-color: rgba(50, 45, 45, 0.5);
+  display:flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
 .movie-modal-content {
-  background: rgb(73, 69, 64);
-  padding: 10px; /* Reduced padding */
+  background: linear-gradient(to right, #e0eafc, #1831a0);
+  padding: 20px; /* Reduced padding */
   border-radius: 5px;
-  position: relative;
+  position: center;
   width: 90%;
   max-width: 500px;
   height: 80vh; /* Set a fixed height based on the viewport height */
   display: flex;
   flex-direction: column;
   overflow-y: auto; /* Add scroll to the modal */
+  margin: auto; /* Add scroll to the modal */
+  color:black;
 }
 
 .close-button {
