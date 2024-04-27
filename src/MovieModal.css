@@ -11,6 +11,8 @@
   z-index: 1000;
 }
 
+
+
 .movie-modal-content {
   background: linear-gradient(to right, #e0eafc, #1831a0);
   padding: 20px; /* Reduced padding */
