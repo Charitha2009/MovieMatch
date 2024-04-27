@@ -8,6 +8,7 @@ import "./home.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Dashboard from './dashboard';
 import { setDoc, doc, getDoc } from 'firebase/firestore';
+import UploadData from './UploadData';
 
 
 class Home extends React.Component {
@@ -71,6 +72,7 @@ class Home extends React.Component {
           <div className="login-card">
             <div className='card-content'>
             <h1>MOVIE MATCH <i class="fa-solid fa-magnifying-glass"></i></h1>
+
             <br></br>
             <p>Welcome to the world of movies! </p>
             <p>Explore and connect with your perfect movie selections, elevating your movie-watching journey.</p>
