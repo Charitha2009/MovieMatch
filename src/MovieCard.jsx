@@ -70,6 +70,7 @@ class MovieCard extends Component {
       await updateDoc(userDocRef, {
         moviesWatched: newStatus
       });
+      window.location.reload();
     });
   };
 
@@ -186,65 +187,63 @@ class MovieCard extends Component {
   
   
 
-  render() 
-  {
+  render() {
     const { movie } = this.props;
-
-    const { posterPath, watched, isModalOpen, isAdmin, isEditing ,metadata} = this.state;
+    const { posterPath, watched, isModalOpen, isAdmin, isEditing, metadata } = this.state;
     const tagline = metadata?.tagline || '';
-   const overview = metadata?.overview || '';
+    const overview = metadata?.overview || '';
+  
     return (
       <div className="movie-card" onClick={this.openModal}>
-      <img src={posterPath ? posterPath : 'https://nbcpalmsprings.com/wp-content/uploads/sites/8/2021/12/BEST-MOVIES-OF-2021.jpeg'} alt={movie.title} className='movie-image'/>
+        <img src={posterPath ? posterPath : 'https://nbcpalmsprings.com/wp-content/uploads/sites/8/2021/12/BEST-MOVIES-OF-2021.jpeg'} alt={movie.title} className='movie-image'/>
         <h3>{movie.title}</h3>
         <p>{movie.overview}</p>
         <button onClick={this.toggleWatched}>
           {watched ? 'Unwatch' : 'Mark as Watched'}
         </button> 
-        {isModalOpen && <MovieModal movie={movie} onClose={this.closeModal}  />}
+        {isModalOpen && <MovieModal movie={movie} onClose={this.closeModal} />}
         
- {isAdmin && (
-          <button className="edit-button" onClick={this.handleEditClick}>
-            Edit
-          </button>
+        {isAdmin && (
+          <div>
+            <button className="edit-button" onClick={this.handleEditClick}>
+              Edit
+            </button>
+            <button className="delete-button" onClick={() => this.deleteMovie(movie.id)}>
+              Delete
+            </button>
+          </div>
         )}
-        <button className='edit-button' onClick={() => this.deleteMovie(movie.id)} > Delete</button>
-       {isEditing && (
-  <div className="edit-form-container">
-    <div className="edit-form-backdrop" onClick={() => this.setState({ isEditing: false })}>
-      <div className="edit-form" onClick={(e) => e.stopPropagation()}>
-        <h2>Edit Movie</h2>
-        <form onSubmit={this.handleEditSubmit}>
-  <input type="hidden" name="id" value={this.props.movie.id} />
-
-  <label style={{color: 'black'}}>
-    Title:
-    <input type="text" defaultValue={this.props.movie.title} name="title" />
-  </label>
   
-  <label style={{color: 'black'}}>
-    Release Date:
-    <input type="date" defaultValue={this.props.movie.release_date} name="release_date" />
-  </label>
-  
-  <label style={{color: 'black'}}>
-    Average Vote:
-    <input type="number" step="0.1" defaultValue={this.props.movie.vote_average} name="vote_average" />
-  </label>
-  
-  <button type="submit">Submit</button>
-  <button type="button" onClick={() => this.setState({ isEditing: false })}>Cancel</button>
-</form>
-
+        {isEditing && (
+          <div className="edit-form-container">
+            <div className="edit-form-backdrop" onClick={() => this.setState({ isEditing: false })}>
+              <div className="edit-form" onClick={(e) => e.stopPropagation()}>
+                <h2>Edit Movie</h2>
+                <form onSubmit={this.handleEditSubmit}>
+                  <input type="hidden" name="id" value={this.props.movie.id} />
+                  <label style={{color: 'black'}}>
+                    Title:
+                    <input type="text" defaultValue={this.props.movie.title} name="title" />
+                  </label>
+                  <label style={{color: 'black'}}>
+                    Release Date:
+                    <input type="date" defaultValue={this.props.movie.release_date} name="release_date" />
+                  </label>
+                  <label style={{color: 'black'}}>
+                    Average Vote:
+                    <input type="number" step="0.1" defaultValue={this.props.movie.vote_average} name="vote_average" />
+                  </label>
+                  <button type="submit">Submit</button>
+                  <button type="button" onClick={() => this.setState({ isEditing: false })}>Cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  </div>
-
-
+    );
+  }
   
-   )}
-   </div>
-  )}
 };
 
 export default MovieCard;

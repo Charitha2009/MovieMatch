@@ -5,6 +5,10 @@ import './dashboard.css'; // Import custom CSS file
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import MovieCard from './MovieCard'; // Import the MovieCard component
 import AddMovieForm from './AddMovieForm';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -17,7 +21,9 @@ class Dashboard extends React.Component {
       thrillerMovies: [],
       watchedMovies: [],
       suggestedMovies: [],
-      showForm: false
+      showForm: false,
+      showStats: false,
+      genreCounts: {},
     };
 
     this.firstScrollRef = React.createRef();
@@ -54,21 +60,22 @@ class Dashboard extends React.Component {
       const userDocSnapshot = await getDoc(userDocRef);
       if (userDocSnapshot.exists()) {
         const userData = userDocSnapshot.data();
-        const movieIds = userData.moviesWatched; // Assuming this is the field where movie IDs are stored
-
+        const movieIds = userData.moviesWatched;
+    
         if (movieIds && movieIds.length > 0) {
           const watchedMovies = await Promise.all(movieIds.map(async (movieId) => {
             const movieRef = doc(firestore, "Movies", movieId);
             const movieSnapshot = await getDoc(movieRef);
-            return movieSnapshot.exists() ? { id: movieSnapshot.id, ...movieSnapshot.data() } : null;
+            if (movieSnapshot.exists()) {
+              return { id: movieSnapshot.id, ...movieSnapshot.data() };
+            }
+            return null;
           }));
-
+    
           const validWatchedMovies = watchedMovies.filter(movie => movie !== null);
           const watchedGenres = [...new Set(validWatchedMovies.flatMap(movie => movie.genre_list))];
 
-          this.setState({ watchedMovies: validWatchedMovies }, () => {
-            this.fetchSuggestedMovies(watchedGenres);
-          });
+          this.setState({ watchedMovies: validWatchedMovies }, this.calculateGenreCounts, this.fetchSuggestedMovies(watchedGenres));
         } else {
           this.setState({ watchedMovies: [], suggestedMovies: [] });
         }
@@ -90,6 +97,7 @@ class Dashboard extends React.Component {
           suggestedMovies.push({ id: doc.id, ...doc.data() });
         }
       });
+      console.log(suggestedMovies);
       this.setState({ suggestedMovies });
     }).catch((error) => {
       console.error('Error fetching suggested movies:', error);
@@ -231,46 +239,137 @@ class Dashboard extends React.Component {
     console.log('Search button clicked');
   };
 
+  calculateGenreCounts = () => {
+    // Initialize all genres with zero count
+    const allGenres = { 'Horror': 0, 'Action': 0, 'Thriller': 0, 'Romantic': 0, 'Comedy': 0 };
+
+    // Count each genre from watched movies
+    const genreCounts = this.state.watchedMovies.reduce((acc, movie) => {
+        movie.genre_list.forEach(genre => {
+            if (acc.hasOwnProperty(genre)) {
+                acc[genre] += 1;
+            }
+        });
+        return acc;
+    }, {...allGenres});  // Spread to ensure mutation does not occur
+
+    // Set the counts directly to state (not percentages)
+    this.setState({ genreCounts });
+};
+
+
+renderPieChart = () => {
+  const { genreCounts } = this.state;
+  const labels = Object.keys(genreCounts);
+  const dataValues = Object.values(genreCounts);
+
+  const total = dataValues.reduce((sum, current) => sum + current, 0);
+
+  const data = {
+    labels,
+    datasets: [{
+      data: dataValues,
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+      hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+    }]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top'
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function(tooltipItem) {
+            const label = tooltipItem.label || '';
+            const value = tooltipItem.raw;
+            const percentage = ((value / total) * 100).toFixed(2) + '%';
+            return `${label}: ${value} (${percentage})`;
+          }
+        }
+      }
+    },
+    title: {
+      display: true,
+      text: 'Genres Watched by the User', // Title here
+      fontSize: 18,
+      padding: {
+        top: 20,
+        bottom: 30 // Adjust padding as needed
+      }
+    }
+  };
+  
+
+  return <Pie data={data} options={options} />;
+};
+
+
+toggleStats = () => {
+  this.setState(prevState => ({
+      showStats: !prevState.showStats
+  }));
+};
+
 
 
   render() {
     const { user } = this.props;
-    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies, watchedMovies, suggestedMovies, showForm } = this.state;
+    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies, watchedMovies, suggestedMovies, showForm, showStats } = this.state;
 
     return (
       <div>
         <div className="navbar-container">
           <div className="navbar-item">MovieMatch <i className="fa-solid fa-magnifying-glass"></i></div>
-          <button className="navbar-button" onClick={this.handleAddMovie}>Add Movie</button>
+        {watchedMovies.length > 0 && (<button className='navbar-button' onClick={this.toggleStats}>Show User Stats</button>)}
+           
+        
+          {user && user.admin && (
+            <button className="navbar-button" onClick={this.handleAddMovie}>Add Movie</button>
+          )}
           <button className="navbar-button" onClick={this.handleSearch}><i className="fa-solid fa-magnifying-glass"></i> Search</button>
           <button className="signout-button" onClick={this.handleSignOut}>Sign Out</button>
-        
         </div>
         {showForm && <AddMovieForm closeForm={() => this.setState({ showForm: false })} />}
 
-
+        {showStats && (
+          <div className="modal">
+            <div className="modal-content">
+              <span className="close" onClick={this.toggleStats}>&times;</span>
+              {this.renderPieChart()}
+            </div>
+          </div>
+        )}
         <div className="content">
           <h2 className='genre-heading'>Welcome, {user ? user.displayName || 'User' : 'User'}!</h2>
 
           {/* Suggested Movies */}
-          <div className="scroll-container">
-            <h2 className='genre-heading'>Suggested Movies</h2>
-            <div className="card-grid">
-              {suggestedMovies.map(movie => (
-                <MovieCard key={movie.id} movie={movie} user={user} />
-              ))}
+          {watchedMovies.length > 0 && (
+            <div className="scroll-container">
+              <h2 className='genre-heading'>Suggested Movies</h2>
+              <div className="card-grid">
+                {suggestedMovies.map(movie => (
+                  <MovieCard key={movie.id} movie={movie} user={user} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Watched Movies */}
-          <div className="scroll-container">
-            <h2 className='genre-heading'>Movies Already Watched</h2>
-            <div className="card-grid" ref={this.sixthScrollRef}>
-              {watchedMovies.map(movie => (
-                <MovieCard key={movie.id} movie={movie} user={user} />
-              ))}
+          {watchedMovies.length > 0 && (
+            <div className="scroll-container">
+              <h2 className='genre-heading'>Movies Already Watched</h2>
+              <div className="card-grid" ref={this.sixthScrollRef}>
+                {watchedMovies.map(movie => (
+                  <MovieCard key={movie.id} movie={movie} user={user} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Comedy Movies */}
           <div className="scroll-container">
@@ -324,7 +423,9 @@ class Dashboard extends React.Component {
         </div>
       </div>
     );
-  }
+}
+
+
 }
 
 export default Dashboard;
