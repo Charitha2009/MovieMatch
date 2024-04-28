@@ -9,6 +9,10 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  height: 70vh;
+  width: 50vw;
+  margin-top: 20vh;
+  margin-left: 25vw;
 }
 
 .movie-modal-content {
