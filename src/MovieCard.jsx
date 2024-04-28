@@ -4,6 +4,9 @@ import { firestore, auth } from './firebase';
 import './dashboard.css'; // Import custom CSS file
 import MovieModal from './MovieModal'; // Import the modal component
 
+
+
+
 class MovieCard extends Component {
   constructor(props) {
     super(props);
@@ -12,7 +15,7 @@ class MovieCard extends Component {
       watched: false,
       watchedButtonVisible: true,
       isModalOpen: false,
-      isAdmin: true, // Add isAdmin state
+      isAdmin: false, // Add isAdmin state
       isEditing: false,
       metadata: null,
       filters: null,
@@ -94,10 +97,7 @@ class MovieCard extends Component {
         getDocs(metadataQuery),
       ]);
 
-      const collectionDetails = collectionsSnap.docs.length ? collectionsSnap.docs[0].data() : null;
-      const filtersDetails = filtersSnap.docs.length ? filtersSnap.docs[0].data() : null;
-      const metadataDetails = metadataSnap.docs.length ? metadataSnap.docs[0].data() : null;
-
+     
       this.setState({
         collectionDetails: collectionsSnap.docs.length ? collectionsSnap.docs[0].data() : null,
         filters: filtersSnap.docs.length ? filtersSnap.docs[0].data() : null,
@@ -215,24 +215,25 @@ class MovieCard extends Component {
         )}
   
         {isEditing && (
-          <div className="edit-form-container">
-            <div className="edit-form-backdrop" onClick={() => this.setState({ isEditing: false })}>
-              <div className="edit-form" onClick={(e) => e.stopPropagation()}>
-                <h2>Edit Movie</h2>
-                <form onSubmit={this.handleEditSubmit}>
+        <div className="edit-form-modal">
+        <div className="edit-form-backdrop" onClick={this.handleEditClick}>
+          <div className="edit-form-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-edit-form" onClick={this.handleEditClick}>&times;</span>
+            <h2>Edit Movie</h2>
+                <form onSubmit={this.handleEditSubmit} className="edit-form">
                   <input type="hidden" name="id" value={this.props.movie.id} />
                   <label style={{color: 'black'}}>
                     Title:
                     <input type="text" defaultValue={this.props.movie.title} name="title" />
-                  </label>
+                  </label><br/>
                   <label style={{color: 'black'}}>
                     Release Date:
                     <input type="date" defaultValue={this.props.movie.release_date} name="release_date" />
-                  </label>
+                  </label><br/>
                   <label style={{color: 'black'}}>
                     Average Vote:
                     <input type="number" step="0.1" defaultValue={this.props.movie.vote_average} name="vote_average" />
-                  </label>
+                  </label><br/>
                   <button type="submit">Submit</button>
                   <button type="button" onClick={() => this.setState({ isEditing: false })}>Cancel</button>
                 </form>

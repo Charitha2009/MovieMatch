@@ -32,6 +32,7 @@ const MovieModal = ({ movie, onClose }) => {
         setCollectionDetails(collectionDetails);
         setFilters(filtersDetails);
         setMetadata(metadataDetails);
+        console.log(metadataDetails)
       } catch (error) {
         console.error('Error fetching movie details:', error);
       }
@@ -82,6 +83,7 @@ const MovieModal = ({ movie, onClose }) => {
 
   if (!metadata && !filters && !collectionDetails) return null;
 
+
   return (
 
 
@@ -93,7 +95,7 @@ const MovieModal = ({ movie, onClose }) => {
         <button className="close-button" onClick={onClose}>X</button>
         {/* Use metadata and filters directly in your JSX */}
         <h2>{movie?.title || 'No title available'}</h2>
-        <p>{metadata?.tagline}</p>
+        <p> Tagline: {metadata?.tagline}</p>
         {/* <img 
           className="movie-modal-poster"
           src={collectionDetails?.poster_path ? 'https://image.tmdb.org/t/p/w500' + metadata.poster_path : 'https://nbcpalmsprings.com/wp-content/uploads/sites/8/2021/12/BEST-MOVIES-OF-2021.jpeg'} 
@@ -102,18 +104,21 @@ const MovieModal = ({ movie, onClose }) => {
         <img src={collectionDetails?.poster_path ? 'https://image.tmdb.org/t/p/w500' + metadata.poster_path : 'https://nbcpalmsprings.com/wp-content/uploads/sites/8/2021/12/BEST-MOVIES-OF-2021.jpeg'} alt={movie.title} className='movie-image'/>
        */}
 
-        <p className="movie-modal-overview">{metadata?.overview || 'No overview available'}</p>
+        <p className="movie-modal-overview">Overview: {metadata?.overview || 'No overview available'}</p>
                 <div className="movie-modal-detail-list">
-          {movie?.genre && movie.genre.length > 0 && (
+
+        <p>  {movie?.genre_list && movie.genre_list.length > 0 && (
             <div>
               <strong>Genres: </strong>
               <div className="detail-list">
-                {movie.genre.map((genreItem, index) => (
+                {movie.genre_list.map((genreItem, index) => (
                   <span key={index} className="detail-item">{genreItem}</span>
                 ))}
               </div>
             </div>
+            
           )}
+          </p>
         </div>
 
         {/* <div className="movie-modal-detail-list">
@@ -129,15 +134,11 @@ const MovieModal = ({ movie, onClose }) => {
           )}
         </div> */}
 
-        <p>{movie?.release_date}</p>
-        <p>"Ratings:"{movie?.vote_average}</p>
-        <p>{filters?.adult}</p>
-        <p> "Status:"{filters?.status}</p>
+        <p>Release Date: {movie?.release_date}</p>
+        <p>Ratings: {movie?.vote_average}</p>
+        <p>Adult: {filters?.adult}</p>
+        <p> Status: {filters?.status}</p>
         
-        
-
-
-
       </div>
     </div>
   );

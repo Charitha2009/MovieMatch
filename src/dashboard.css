@@ -1,131 +1,254 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: #f4f4f4;
+  color: #333;
+}
+
 .navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: black;
-    padding: 10px 20px;
-    color: white;
-    }
-  
-  .navbar-item {
-    margin-right: 20px;
-  }
-  
-  .signout-button {
-    background-color: #ff3860;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-  }
-  
-  .card-grid {
-    display: flex;
-    /* grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); */
-    grid-gap: 20px;
-    background-color: white;
-    padding: 5vw;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    flex-wrap: nowrap;
-  }
-  
-  .movie-card {
-    background-color: black;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    height: 450px;
-    width: 200px;
-    color: white;
-  }
-  .movie-card img {
-    height: 350px;
-    width: 200px;
-  }
-  
-  .scroll-container {
-    position: relative;
-    overflow-x: auto;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  
-  .scroll-button {
-    background-color: transparent;
-    border: none;
-    font-size: 24px;
-    color: #555;
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-  }
-  
-  .left {
-    left: 0;
-  }
-  
-  .right {
-    right: 0;
-  }
-  .right{
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-  }
-
-  .left{
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-  }
-
-  .genre-heading{
-    margin-left: 5vw;
-  }
-
-.movie-image {
-    height: 30vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  background-color: #2c3e50;
 }
 
-.watch-button {
-  width: max-content;
-  background-color: #ff3860;
-  cursor: pointer;
-  border: none;
+.navbar-item {
   color: white;
-  padding: 10px 24px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
 }
 
-.modal {
+.search-container {
+  position: relative;
+  flex-grow: 1;
+  margin-left: 1em;
+}
+
+.search-input {
+  padding: 0.5em;
+  font-size: 1em;
+  width: 90%;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.navbar-button,
+.signout-button {
+  padding: 0.5em 1em;
+  margin: 0 0.5em;
+  background-color: #e0eafc;
+  color: #2c3e50;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.navbar-button:hover {
+  background-color: #c0d0f8;
+}
+
+.signout-button {
+  background-color: #e74c3c;
+}
+
+.signout-button:hover {
+  background-color: #c0392b;
+}
+
+.genre-suggestions-dropdown {
+  display: none; /* Hide by default and only show when needed */
+  position: absolute;
+  width: calc(100% - 2em);
+  top: 3.5em;
+  left: 1em;
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  z-index: 100;
+}
+
+.genre-suggestions-dropdown div {
+  padding: 0.5em 1em;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.genre-suggestions-dropdown div:hover {
+  background-color: #efefef;
+}
+
+.genre-suggestions-dropdown.show {
+  display: block;
+}
+
+.content {
+  padding: 2em;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1em;
+}
+
+.movie-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.movie-card img {
+  width: 100%;
+  height: auto;
+}
+
+.movie-card h3 {
+  margin: 0.5em;
+  font-size: 1em;
+  color: #333;
+}
+
+.movie-card p {
+  margin: 0.5em;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.movie-card:hover {
+  z-index: 10; /* Ensure the hovered card rises above others */
+}
+
+.movie-modal-backdrop.active + .movie-card:hover {
+  transform: none; /* Disable hover effects when modal is active */
+}
+
+
+.scroll-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 20px; /* Give some space at the bottom for a scrollbar */
+}
+
+/* Style for individual movie cards inside the scroll container */
+.scroll-container .movie-card {
+  display: inline-block;
+  width: 200px; /* Width of the movie cards */
+  margin-right: 10px; /* Space between movie cards */
+  vertical-align: top; /* Align the tops of inline-block elements */
+}
+
+/* Override the grid setting for card-grid within scroll-container */
+.scroll-container .card-grid {
+  display: inline; /* Make card grid inline for horizontal layout */
+}
+
+/* Ensure the last movie card has no margin to the right */
+.scroll-container .movie-card:last-child {
+  margin-right: 0;
+}
+
+/* Additional CSS for buttons to scroll left and right */
+.scroll-button {
+  background-color: transparent;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.left-scroll-button {
+  left: 0;
+}
+
+.right-scroll-button {
+  right: 0;
+}
+/* Dropdown for genre suggestions */
+.genre-suggestions-dropdown {
+  display: block;
+  position: absolute;
+  background-color: #fff; /* Light background for dropdown */
+  border: 1px solid #ddd; /* Subtle border for the dropdown */
+  border-radius: 4px;
+  width: 100%; /* Full width of the container */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Shadow for depth */
+  z-index: 5; /* Ensure dropdown appears above other content */
+  top: 100%; /* Position below the input */
+  left: 0;
+  margin-top: 0.25em; /* Small gap between input and dropdown */
+}
+
+.genre-suggestions-dropdown div {
+  padding: 0.75em 1em; /* Padding inside each dropdown item */
+  cursor: pointer; /* Change cursor to indicate clickable items */
+  transition: background-color 0.2s; /* Smooth transition for hover effect */
+}
+
+.genre-suggestions-dropdown div:hover {
+  background-color: #f7f7f7; /* Highlight color on hover */
+}
+
+/* If you have a button to show/hide the genre list, you can style it like this */
+.show-genre-button {
+  padding: 0.5em 1em;
+  background-color: #3498db; /* Consistent blue for actions */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 0.5em; /* Space from the previous element */
+  font-weight: bold;
+}
+
+.show-genre-button:hover {
+  background-color: #2980b9; /* A slightly darker blue on hover */
+}
+
+.add-movie-modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
+  right: 0; /* Ensure it covers the entire viewport horizontally */
+  bottom: 0; /* Ensure it covers the entire viewport vertically */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  z-index: 1050; /* Ensure it's on top of other content */
 }
 
 .modal-content {
   background: white;
   padding: 20px;
   border-radius: 4px;
-  width: 600px;
-  max-height: 80vh;
-  overflow: auto;
-  color: black;
+  max-width: 50%; /* Maximum width of the modal content */
+  margin: auto; /* This will help in centering if the content is smaller than max-width */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional shadow for depth */
 }
 
-.close {
-  float: right;
-  font-size: 28px;
-  cursor: pointer;
+
+.modal-backdrop {
+  width: 100%;
+  height: 100%;
 }
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  border: none;
+  background: none;
+}
+

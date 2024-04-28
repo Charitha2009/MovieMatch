@@ -18,8 +18,10 @@ class Home extends React.Component {
       user: null,
       error: null,
       redirectToDashboard: false // Add state to handle redirection
+
     };
   }
+
 
   componentDidMount() {
     // Listen for authentication state changes

@@ -4,7 +4,7 @@ import { auth, firestore } from './firebase';
 import './dashboard.css'; // Import custom CSS file
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import MovieCard from './MovieCard'; // Import the MovieCard component
-import AddMovieForm from './AddMovieForm';
+import AddMovieForm from './AddMovieForm.jsx';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
@@ -24,6 +24,13 @@ class Dashboard extends React.Component {
       showForm: false,
       showStats: false,
       genreCounts: {},
+      searchTerm: '',
+      searchResults: [],
+      isSearching: false,
+      showGenreSuggestions: false,
+      genres: ['Comedy', 'Romance', 'Horror', 'Action', 'Thriller'],
+
+
     };
 
     this.firstScrollRef = React.createRef();
@@ -55,12 +62,11 @@ class Dashboard extends React.Component {
   fetchWatchedMovies = async () => {
     const userEmail = auth.currentUser.email; // Assuming currentUser is not null
     const userDocRef = doc(firestore, "users", userEmail);
-
     try {
       const userDocSnapshot = await getDoc(userDocRef);
       if (userDocSnapshot.exists()) {
         const userData = userDocSnapshot.data();
-        const movieIds = userData.moviesWatched;
+         const movieIds = userData.moviesWatched;
     
         if (movieIds && movieIds.length > 0) {
           const watchedMovies = await Promise.all(movieIds.map(async (movieId) => {
@@ -70,12 +76,12 @@ class Dashboard extends React.Component {
               return { id: movieSnapshot.id, ...movieSnapshot.data() };
             }
             return null;
-          }));
+          })); 
     
           const validWatchedMovies = watchedMovies.filter(movie => movie !== null);
           const watchedGenres = [...new Set(validWatchedMovies.flatMap(movie => movie.genre_list))];
 
-          this.setState({ watchedMovies: validWatchedMovies }, this.calculateGenreCounts, this.fetchSuggestedMovies(watchedGenres));
+          this.setState({ watchedMovies: validWatchedMovies }, this.calculateGenreCounts, this.fetchSuggestedMovies(watchedGenres), this.isAdmin = userData.admin);
         } else {
           this.setState({ watchedMovies: [], suggestedMovies: [] });
         }
@@ -97,7 +103,6 @@ class Dashboard extends React.Component {
           suggestedMovies.push({ id: doc.id, ...doc.data() });
         }
       });
-      console.log(suggestedMovies);
       this.setState({ suggestedMovies });
     }).catch((error) => {
       console.error('Error fetching suggested movies:', error);
@@ -200,7 +205,9 @@ class Dashboard extends React.Component {
   };
   
   handleAddMovie = () => {
-    this.setState(prevState => ({ showForm: !prevState.showForm }));
+    this.setState(prevState => ({
+      showForm: !prevState.showForm
+    }));
   };
 
   handleSignOut = () => {
@@ -230,14 +237,7 @@ class Dashboard extends React.Component {
   };
 
 
- 
 
-  // Method to handle when the Search button is clicked
-  handleSearch = () => {
-    // You can replace this with your logic to handle the search action
-    // This might involve setting a state variable to true which conditionally renders a search bar, or redirects to a search page
-    console.log('Search button clicked');
-  };
 
   calculateGenreCounts = () => {
     // Initialize all genres with zero count
@@ -315,11 +315,98 @@ toggleStats = () => {
   }));
 };
 
+// Search Logic //
+
+
+
+
+// handleGenreClick = async (genre) => {
+//   const moviesCollectionRef = collection(firestore, 'Movies');
+//   const q = query(moviesCollectionRef, where('genre_list', 'array-contains', genre));
+
+//   const querySnapshot = await getDocs(q);
+//   const genreMovies = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+//   this.setState({ searchResults: genreMovies, isSearching: true, showGenreSuggestions: false });
+// };
+
+
+handleGenreClick = async (genre) => {
+  const moviesCollectionRef = collection(firestore, 'Movies');
+  const q = query(moviesCollectionRef, where('genre_list', 'array-contains', genre));
+
+  try {
+    const querySnapshot = await getDocs(q);
+    const genreMovies = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    if (genreMovies.length > 0) {
+      this.setState({ searchResults: genreMovies, isSearching: true, showGenreSuggestions: false });
+    } else {
+      console.log('No movies found for this genre.');
+      this.setState({ searchResults: [], isSearching: true, showGenreSuggestions: false });
+    }
+  } catch (error) {
+    console.error('Error fetching movies for genre:', error);
+    this.setState({ searchResults: [], isSearching: false, showGenreSuggestions: false });
+  }
+};
+
+// Add this method to show genre suggestions
+toggleGenreSuggestions = () => {
+  this.setState(prevState => ({ showGenreSuggestions: !prevState.showGenreSuggestions }));
+};
+
+// Modify this method to close the genre suggestions
+handleSearchInputChange = (event) => {
+  this.setState({ searchTerm: event.target.value, showGenreSuggestions: false });
+};
+
+
+handleSearchSubmit = async () => {
+  const { searchTerm } = this.state;
+  if (searchTerm.trim() === '') {
+    this.setState({ searchResults: [], isSearching: false });
+    return;
+  }
+
+  const moviesCollectionRef = collection(firestore, 'Movies');
+  // Create a query that will return movies where the title starts with the search term
+  const q = query(
+    moviesCollectionRef, 
+    where('title', '>=', searchTerm),
+    where('title', '<=', searchTerm + '\uf8ff') // The character '\uf8ff' is a high code point in the Unicode range
+  );
+
+  getDocs(q)
+    .then((querySnapshot) => {
+      const searchResults = [];
+      querySnapshot.forEach((doc) => {
+        searchResults.push({ id: doc.id, ...doc.data() });
+      });
+
+      this.setState({ searchResults, isSearching: true });
+    })
+    .catch((error) => {
+      console.error('Error fetching search results:', error);
+    });
+};
+
+
+handleSearchCancel = () => {
+  this.setState({ searchTerm: '', searchResults: [], isSearching: false });
+};
+
+
+
 
 
   render() {
     const { user } = this.props;
-    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies, watchedMovies, suggestedMovies, showForm, showStats } = this.state;
+
+    const { comedyMovies, romanticMovies, horrorMovies, actionMovies, thrillerMovies, watchedMovies, suggestedMovies, showForm, showStats,searchTerm,
+      searchResults,
+      isSearching,showGenreSuggestions,
+      genres, } = this.state;
 
     return (
       <div>
@@ -328,13 +415,47 @@ toggleStats = () => {
         {watchedMovies.length > 0 && (<button className='navbar-button' onClick={this.toggleStats}>Show User Stats</button>)}
            
         
-          {user && user.admin && (
-            <button className="navbar-button" onClick={this.handleAddMovie}>Add Movie</button>
+          {user && this.isAdmin && (
+          <button className="navbar-button" onClick={this.handleAddMovie}>Add Movie</button>
           )}
-          <button className="navbar-button" onClick={this.handleSearch}><i className="fa-solid fa-magnifying-glass"></i> Search</button>
-          <button className="signout-button" onClick={this.handleSignOut}>Sign Out</button>
+          <div className="search-container">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search movies..."
+              onChange={this.handleSearchInputChange}
+              value={searchTerm}
+              onFocus={this.toggleGenreSuggestions}
+            />
+            <button className="navbar-button" onClick={this.handleSearchSubmit}>Search</button>
+            {showGenreSuggestions && (
+              <div className="genre-suggestions-dropdown">
+                {genres.map(genre => (
+                  <div key={genre} onClick={() => this.handleGenreClick(genre)}>
+                    {genre}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          
+        
+        <button className="signout-button" onClick={this.handleSignOut}>Sign Out</button>
         </div>
-        {showForm && <AddMovieForm closeForm={() => this.setState({ showForm: false })} />}
+
+        {
+          showForm && (
+            <div className="add-movie-modal">
+              <div className="modal-backdrop" onClick={this.handleAddMovie}>
+                <div className="modal-content" onClick={e => e.stopPropagation()}>
+                  <span className="close-modal" onClick={this.handleAddMovie}>&times;</span>
+                  <AddMovieForm closeForm={this.handleAddMovie} />
+                </div>
+              </div>
+            </div>
+          )
+        }
 
         {showStats && (
           <div className="modal">
@@ -344,8 +465,26 @@ toggleStats = () => {
             </div>
           </div>
         )}
+
+
+
         <div className="content">
-          <h2 className='genre-heading'>Welcome, {user ? user.displayName || 'User' : 'User'}!</h2>
+        <h2 className='genre-heading'>Welcome, {user ? user.displayName || 'User' : 'User'}!</h2>
+        {isSearching ? (
+            // Search Results
+            <div className="scroll-container">
+              <h2 className='genre-heading'>Search Results</h2>
+              
+              <button onClick={this.handleSearchCancel}>Clear Search</button>
+              <div className="card-grid">
+                {searchResults.map(movie => (
+                  <MovieCard key={movie.id} movie={movie} user={user} />
+                ))}
+              </div>
+            </div>
+          ) : (
+          <>
+          
 
           {/* Suggested Movies */}
           {watchedMovies.length > 0 && (
@@ -420,11 +559,12 @@ toggleStats = () => {
               ))}
             </div>
           </div>
+          </>
+        )}
         </div>
       </div>
     );
-}
-
+  }
 
 }
 

@@ -16,9 +16,7 @@
     margin-bottom: 0.5rem;
   }
   
-  input[type="text"],
-  input[type="number"],
-  input[type="date"] {
+  .form-container input {
     width: 100%;
     padding: 0.5rem;
     border: 1px solid #ccc;
@@ -27,11 +25,12 @@
   
   button {
     padding: 0.5rem 1rem;
-    background-color: #007bff;
+    background-color: #2c3e50;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin:1px;
   }
   
   button:hover {

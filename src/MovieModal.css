@@ -11,44 +11,46 @@
   z-index: 1000;
 }
 
-
-
 .movie-modal-content {
-  background: linear-gradient(to right, #e0eafc, #1831a0);
-  padding: 20px; /* Reduced padding */
+  background: linear-gradient(to right, #e0eafc, #2240c5);
+  padding: 20px;
   border-radius: 5px;
-  position: center;
   width: 90%;
   max-width: 500px;
-  height: 80vh; /* Set a fixed height based on the viewport height */
+  height: auto; /* Removed fixed height to allow content-based sizing */
+  max-height: 80vh; /* Keep the modal within the viewport with scrolling */
+  overflow-y: auto;
+  position: center; /* Set to relative to position close button absolutely within */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Add shadow for depth */
   display: flex;
   flex-direction: column;
   overflow-y: auto; /* Add scroll to the modal */
   margin: auto; /* Add scroll to the modal */
   color:black;
+  z-index: 1001; /* Ensure modal is above other content */
 }
 
 .close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem; /* Adjust font size as needed */
+  color: #333; /* Adjust close button color as needed */
+  cursor: pointer;
   position: absolute;
   top: 10px;
   right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
 }
-
 
 
 .movie-modal-overview {
   margin: 10px 0;
-  white-space: pre-wrap; /* Preserves spaces and lines */
+  white-space: pre-wrap; 
 }
 
 /* Add any other styling you need for the overview text */
-.movie-modal-overview p {
+ .movie-modal-overview p {
   margin: 0; /* Remove default paragraph margin */
-}
+ }
 
 
 .movie-modal-detail-list {
@@ -80,17 +82,113 @@
   max-width: 200px; /* Maximum width */
   height: auto; /* Maintain aspect ratio */
   margin: 0 auto; /* Center the image */
-}.movie-modal-description {
-  flex-grow: 1; /* Takes up all available space */
-  overflow-y: auto; /* Add scroll to the description */
 }
 
-.edit-button {
-  margin-top: 10px; /* Space above the button */
-  padding: 8px 16px; /* Padding inside the button */
-  border: none; /* No border by default */
-  background-color: #4CAF50; /* Example background color */
-  color: white; /* Text color */
-  border-radius: 4px; /* Rounded corners */
-  cursor: pointer; /* Cursor to indicate it's clickable */
+/* }.movie-modal-description {
+  flex-grow: 1; 
+  overflow-y: auto; 
+} */
+
+
+/* .edit-button, .delete-button, .watch-button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  border: none;
+  background-color: #3498db; 
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1rem; 
+  text-align: center;
+  transition: background-color 0.3s ease; 
+.edit-button:hover, .delete-button:hover, .watch-button:hover {
+  background-color: #2980b9;  } */
+
+.delete-button {
+  background-color: #e74c3c; 
+} 
+
+.delete-button:hover {
+  background-color: #c0392b;
+} 
+
+.edit-form-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.edit-form-backdrop {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 50%; /* You can adjust this as needed */
+  max-width: 500px; /* Maximum width */
+  margin: auto; /* Center the modal on the screen */
+}
+
+.close-edit-form {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #333;
+}
+
+.edit-form-content {
+  position: relative;
+}
+
+/* Styles for form elements */
+.edit-form label {
+  display: block; /* Make labels block level for better structure */
+  color: #333;
+  margin: 10px 0; /* Add some space around the labels */
+}
+
+.edit-form input[type="text"],
+.edit-form input[type="date"],
+.edit-form input[type="number"] {
+  width: 50%; /* Full width */
+  padding: 8px;
+  margin-bottom: 10px; /* Space below the input fields */
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.edit-form button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px; /* Space between buttons */
+}
+
+.edit-form button[type="submit"] {
+  background-color: #3498db;
+  color: white;
+}
+
+.edit-form button[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+.edit-form button[type="button"] {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.edit-form button[type="button"]:hover {
+  background-color: #7f8c8d;
 }
