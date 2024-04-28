@@ -305,7 +305,11 @@ renderPieChart = () => {
   };
   
 
-  return <Pie data={data} options={options} />;
+  return ( <div className="chart-container">
+  <div className="canvas-container">
+    <Pie data={data} options={options} />
+  </div>
+</div>);
 };
 
 
@@ -353,7 +357,7 @@ handleGenreClick = async (genre) => {
 
 // Add this method to show genre suggestions
 toggleGenreSuggestions = () => {
-  this.setState(prevState => ({ showGenreSuggestions: !prevState.showGenreSuggestions }));
+  this.setState(prevState =>  ({ showGenreSuggestions: !prevState.showGenreSuggestions }));
 };
 
 // Modify this method to close the genre suggestions

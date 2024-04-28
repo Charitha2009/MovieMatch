@@ -252,3 +252,16 @@ body {
   background: none;
 }
 
+.chart-container {
+  width: 40vw; 
+  height: 40vh; 
+  position: relative;
+}
+
+.canvas-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
